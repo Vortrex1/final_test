@@ -10,6 +10,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
+  TEST_PROJECT: HotelBooking.Tests/HotelBooking.Tests.csproj
 
 jobs:
   code-quality:
@@ -25,11 +26,11 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore ${{ env.TEST_PROJECT }}
       
       - name: Analyze code
-        run: dotnet build --no-restore -c Release --nologo /p:EnforceCodeStyleInBuild=true /p:TreatWarningsAsErrors=false
+        run: dotnet build ${{ env.TEST_PROJECT }} --no-restore -c Release --nologo /p:EnforceCodeStyleInBuild=true /p:TreatWarningsAsErrors=false
       
       - name: Check code formatting
-        run: dotnet format --verify-no-changes --verbosity diagnostic
+        run: dotnet format ${{ env.TEST_PROJECT }} --verify-no-changes --verbosity diagnostic
         continue-on-error: true

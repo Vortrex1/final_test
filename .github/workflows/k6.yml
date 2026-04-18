@@ -10,9 +10,10 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
+  API_PROJECT: HotelBooking/HotelBooking.csproj
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: hoteldb
+  POSTGRES_PASSWORD: postgres_password
+  POSTGRES_DB: HotelBookingDb
   POSTGRES_PORT: 5432
   API_PORT: 5000
 
@@ -49,34 +50,25 @@ jobs:
         with:
           k6-version: latest
       
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h localhost -p ${{ env.POSTGRES_PORT }}; do
-            echo 'Waiting for PostgreSQL...'
-            sleep 1
-          done
-        env:
-          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
-      
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore ${{ env.API_PROJECT }}
       
       - name: Build API
-        run: dotnet build HotelBooking/HotelBooking.csproj --configuration Release
+        run: dotnet build ${{ env.API_PROJECT }} --configuration Release --no-restore
       
       - name: Publish API
-        run: dotnet publish HotelBooking/HotelBooking.csproj --configuration Release --output ./api-build --no-build
+        run: dotnet publish ${{ env.API_PROJECT }} --configuration Release --output ./api-build --no-build
       
       - name: Start API with seeded database
         run: |
           cd ./api-build
-          timeout 120 dotnet HotelBooking.dll &
+          nohup dotnet HotelBooking.dll > ../api.log 2>&1 &
+          echo $! > ../api.pid
           sleep 10
         env:
           ASPNETCORE_ENVIRONMENT: Production
           ASPNETCORE_URLS: http://localhost:${{ env.API_PORT }}
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
-        continue-on-error: true
       
       - name: Wait for API to be ready
         run: |
@@ -108,3 +100,10 @@ jobs:
           path: |
             k6-results/
           retention-days: 30
+
+      - name: Stop API
+        if: always()
+        run: |
+          if [ -f api.pid ]; then
+            kill "$(cat api.pid)" || true
+          fi

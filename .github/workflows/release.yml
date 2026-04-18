@@ -9,6 +9,8 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
+  TEST_PROJECT: HotelBooking.Tests/HotelBooking.Tests.csproj
+  API_PROJECT: HotelBooking/HotelBooking.csproj
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
@@ -29,16 +31,16 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore ${{ env.TEST_PROJECT }}
       
       - name: Build project
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ${{ env.TEST_PROJECT }} --configuration Release --no-restore
       
       - name: Run tests
-        run: dotnet test HotelBooking.Tests/HotelBooking.Tests.csproj --configuration Release --no-build --logger "trx"
+        run: dotnet test ${{ env.TEST_PROJECT }} --configuration Release --no-build --logger "trx"
       
       - name: Publish project
-        run: dotnet publish HotelBooking/HotelBooking.csproj --configuration Release --output ./publish --no-build
+        run: dotnet publish ${{ env.API_PROJECT }} --configuration Release --output ./publish --no-build
       
       - name: Create release
         uses: softprops/action-gh-release@v1

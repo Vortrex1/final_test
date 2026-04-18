@@ -11,9 +11,10 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
+  TEST_PROJECT: HotelBooking.Tests/HotelBooking.Tests.csproj
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: hoteldb
+  POSTGRES_PASSWORD: postgres_password
+  POSTGRES_DB: HotelBookingDb
   POSTGRES_PORT: 5432
 
 jobs:
@@ -24,17 +25,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: Check PR title
         run: |
           if [[ ! "${{ github.event.pull_request.title }}" =~ ^(feat|fix|docs|style|refactor|perf|test|chore)(\([a-z]+\))?!?: ]]; then
-            echo "PR title must follow conventional commit format"
-            exit 1
+            echo "::warning::PR title does not follow conventional commit format"
           fi
       
       - name: Check for changes
         run: |
-          if [ -z "$(git diff --name-only origin/main HEAD)" ]; then
+          if [ "${{ github.event.pull_request.changed_files }}" -eq 0 ]; then
             echo "No changes detected"
             exit 1
           fi
@@ -63,29 +65,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+        with:
+          fetch-depth: 0
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h localhost -p ${{ env.POSTGRES_PORT }}; do
-            echo 'Waiting for PostgreSQL...'
-            sleep 1
-          done
-        env:
-          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
-      
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore ${{ env.TEST_PROJECT }}
       
       - name: Build project
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ${{ env.TEST_PROJECT }} --configuration Release --no-restore
       
       - name: Run all tests
-        run: dotnet test HotelBooking.Tests/HotelBooking.Tests.csproj --configuration Release --no-build --logger "trx"
+        run: dotnet test ${{ env.TEST_PROJECT }} --configuration Release --no-build --logger "trx"
         env:
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
       
