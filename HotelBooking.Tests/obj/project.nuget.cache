@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "FSzuMa0/xVs=",
+  "dgSpecHash": "/nQiLQ8WJlg=",
   "success": true,
-  "projectFilePath": "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
+  "projectFilePath": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Andriy\\.nuget\\packages\\autofixture\\4.18.1\\autofixture.4.18.1.nupkg.sha512",
     "C:\\Users\\Andriy\\.nuget\\packages\\autofixture.xunit2\\4.18.1\\autofixture.xunit2.4.18.1.nupkg.sha512",
+    "C:\\Users\\Andriy\\.nuget\\packages\\bogus\\35.6.5\\bogus.35.6.5.nupkg.sha512",
     "C:\\Users\\Andriy\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "C:\\Users\\Andriy\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",
     "C:\\Users\\Andriy\\.nuget\\packages\\coverlet.collector\\6.0.4\\coverlet.collector.6.0.4.nupkg.sha512",
@@ -156,5 +157,15 @@
     "C:\\Users\\Andriy\\.nuget\\packages\\xunit.extensibility.execution\\2.9.3\\xunit.extensibility.execution.2.9.3.nupkg.sha512",
     "C:\\Users\\Andriy\\.nuget\\packages\\xunit.runner.visualstudio\\3.1.4\\xunit.runner.visualstudio.3.1.4.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Произошла ошибка при получении данных уязвимости пакета: Сделана попытка доступа к сокету методом, запрещенным правами доступа. (api.nuget.org:443)",
+      "projectPath": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

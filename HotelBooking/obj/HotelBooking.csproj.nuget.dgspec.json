@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj": {}
+    "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj": {}
   },
   "projects": {
-    "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj": {
+    "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj",
+        "projectUniqueName": "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj",
         "projectName": "HotelBooking",
-        "projectPath": "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj",
-        "packagesPath": "C:\\Users\\Andriy\\.nuget\\packages\\",
-        "outputPath": "C:\\kn\\lab\\test_final\\HotelBooking\\obj\\",
+        "projectPath": "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj",
+        "packagesPath": "C:\\kn\\lab\\final_test\\.dotnet\\.nuget\\packages\\",
+        "outputPath": "C:\\kn\\lab\\final_test\\HotelBooking\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Andriy\\AppData\\Roaming\\NuGet\\NuGet.Config"

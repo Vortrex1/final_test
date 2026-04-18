@@ -36,6 +36,19 @@
           }
         }
       },
+      "Bogus/35.6.5": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Bogus.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Bogus.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "BouncyCastle.Cryptography/2.6.2": {
         "type": "package",
         "compile": {
@@ -2873,6 +2886,8 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
+          "AutoFixture": "4.17.0",
+          "Bogus": "35.6.5",
           "Microsoft.AspNetCore.OpenApi": "8.0.26",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.10",
           "Swashbuckle.AspNetCore": "6.6.2"
@@ -2930,6 +2945,27 @@
         "lib/netstandard2.0/AutoFixture.Xunit2.dll",
         "lib/netstandard2.0/AutoFixture.Xunit2.pdb",
         "lib/netstandard2.0/AutoFixture.Xunit2.xml"
+      ]
+    },
+    "Bogus/35.6.5": {
+      "sha512": "2FGZn+aAVHjmCgClgmGkTDBVZk0zkLvAKGaxEf5JL6b3i9JbHTE4wnuY4vHCuzlCmJdU6VZjgDfHwmYkQF8VAA==",
+      "type": "package",
+      "path": "bogus/35.6.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "bogus.128.png",
+        "bogus.35.6.5.nupkg.sha512",
+        "bogus.nuspec",
+        "lib/net40/Bogus.dll",
+        "lib/net40/Bogus.xml",
+        "lib/net6.0/Bogus.dll",
+        "lib/net6.0/Bogus.xml",
+        "lib/netstandard1.3/Bogus.dll",
+        "lib/netstandard1.3/Bogus.xml",
+        "lib/netstandard2.0/Bogus.dll",
+        "lib/netstandard2.0/Bogus.xml"
       ]
     },
     "BouncyCastle.Cryptography/2.6.2": {
@@ -8689,16 +8725,16 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Andriy\\.nuget\\packages\\": {}
+    "C:\\Users\\Andriy\\.nuget\\packages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
+      "projectUniqueName": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
       "projectName": "HotelBooking.Tests",
-      "projectPath": "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
-      "packagesPath": "C:\\Users\\Andriy\\.nuget\\packages\\",
-      "outputPath": "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\obj\\",
+      "projectPath": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
+      "packagesPath": "C:\\Users\\Andriy\\.nuget\\packages",
+      "outputPath": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Andriy\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -8713,8 +8749,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj": {
-              "projectPath": "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj"
+            "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj": {
+              "projectPath": "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj"
             }
           }
         }
@@ -8791,5 +8827,13 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Произошла ошибка при получении данных уязвимости пакета: Сделана попытка доступа к сокету методом, запрещенным правами доступа. (api.nuget.org:443)"
+    }
+  ]
 }

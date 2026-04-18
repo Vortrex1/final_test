@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\HotelBooking.Tests.csproj": {}
+    "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj": {}
   },
   "projects": {
-    "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\HotelBooking.Tests.csproj": {
+    "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
+        "projectUniqueName": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
         "projectName": "HotelBooking.Tests",
-        "projectPath": "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
-        "packagesPath": "C:\\Users\\Andriy\\.nuget\\packages\\",
-        "outputPath": "C:\\kn\\lab\\test_final\\HotelBooking.Tests\\obj\\",
+        "projectPath": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\HotelBooking.Tests.csproj",
+        "packagesPath": "C:\\Users\\Andriy\\.nuget\\packages",
+        "outputPath": "C:\\kn\\lab\\final_test\\HotelBooking.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Andriy\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,8 +26,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj": {
-                "projectPath": "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj"
+              "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj": {
+                "projectPath": "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj"
               }
             }
           }
@@ -105,14 +105,14 @@
         }
       }
     },
-    "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj": {
+    "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj",
+        "projectUniqueName": "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj",
         "projectName": "HotelBooking",
-        "projectPath": "C:\\kn\\lab\\test_final\\HotelBooking\\HotelBooking.csproj",
-        "packagesPath": "C:\\Users\\Andriy\\.nuget\\packages\\",
-        "outputPath": "C:\\kn\\lab\\test_final\\HotelBooking\\obj\\",
+        "projectPath": "C:\\kn\\lab\\final_test\\HotelBooking\\HotelBooking.csproj",
+        "packagesPath": "C:\\Users\\Andriy\\.nuget\\packages",
+        "outputPath": "C:\\kn\\lab\\final_test\\HotelBooking\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Andriy\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -145,6 +145,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AutoFixture": {
+              "target": "Package",
+              "version": "[4.17.0, )"
+            },
+            "Bogus": {
+              "target": "Package",
+              "version": "[35.6.5, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.26, )"
