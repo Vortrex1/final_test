@@ -60,6 +60,7 @@ jobs:
         run: dotnet publish ${{ env.API_PROJECT }} --configuration Release --output ./api-build --no-build
       
       - name: Start API with seeded database
+        shell: bash
         run: |
           cd ./api-build
           nohup dotnet HotelBooking.dll > ../api.log 2>&1 &
@@ -71,16 +72,18 @@ jobs:
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
       
       - name: Wait for API to be ready
+        shell: bash
         run: |
-          for i in {1..30}; do
+          for i in {1..90}; do
             if curl -s http://localhost:${{ env.API_PORT }}/api/rooms > /dev/null; then
               echo "API is ready!"
               exit 0
             fi
-            echo "Waiting for API... (attempt $i/30)"
+            echo "Waiting for API... (attempt $i/90)"
             sleep 2
           done
           echo "API failed to start"
+          cat api.log || true
           exit 1
       
       - name: Run k6 Smoke Tests
@@ -99,10 +102,13 @@ jobs:
           name: k6-results
           path: |
             k6-results/
+            api.log
           retention-days: 30
+          if-no-files-found: ignore
 
       - name: Stop API
         if: always()
+        shell: bash
         run: |
           if [ -f api.pid ]; then
             kill "$(cat api.pid)" || true

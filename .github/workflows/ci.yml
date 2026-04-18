@@ -11,29 +11,10 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'
   TEST_PROJECT: HotelBooking.Tests/HotelBooking.Tests.csproj
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres_password
-  POSTGRES_DB: HotelBookingDb
-  POSTGRES_PORT: 5432
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - "5432:5432"
     
     steps:
       - name: Checkout code
@@ -52,13 +33,9 @@ jobs:
       
       - name: Run Unit Tests
         run: dotnet test ${{ env.TEST_PROJECT }} --filter "FullyQualifiedName~HotelBooking.Tests.Unit|FullyQualifiedName~HotelBooking.Tests.UnitTest1" --configuration Release --no-build --logger "trx;LogFileName=unit-tests.trx" --collect:"XPlat Code Coverage"
-        env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
       
       - name: Run Integration Tests
         run: dotnet test ${{ env.TEST_PROJECT }} --filter "FullyQualifiedName~HotelBooking.Tests.Integration" --configuration Release --no-build --logger "trx;LogFileName=integration-tests.trx"
-        env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
       
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -66,16 +43,9 @@ jobs:
         with:
           name: test-results
           path: |
-            **/bin/Release/**/TestResults/
+            **/TestResults/*.trx
           retention-days: 30
-      
-      - name: Publish test report
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: '**/bin/Release/**/TestResults/*.trx'
-          check_name: Unit & Integration Tests
-          comment_title: Test Results
+          if-no-files-found: ignore
 
   build:
     runs-on: ubuntu-latest
