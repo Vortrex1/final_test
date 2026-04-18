@@ -10,25 +10,11 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
+  TEST_PROJECT: HotelBooking.Tests/HotelBooking.Tests.csproj
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: hoteldb
+  POSTGRES_PASSWORD: postgres_password
+  POSTGRES_DB: HotelBookingDb
   POSTGRES_PORT: 5432
-
-services:
-  postgres:
-    image: postgres:16-alpine
-    env:
-      POSTGRES_USER: ${{ env.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-      POSTGRES_DB: ${{ env.POSTGRES_DB }}
-    options: >-
-      --health-cmd pg_isready
-      --health-interval 10s
-      --health-timeout 5s
-      --health-retries 5
-    ports:
-      - ${{ env.POSTGRES_PORT }}:5432
 
 jobs:
   test:
@@ -58,28 +44,19 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h localhost -p ${{ env.POSTGRES_PORT }}; do
-            echo 'Waiting for PostgreSQL...'
-            sleep 1
-          done
-        env:
-          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
-      
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore ${{ env.TEST_PROJECT }}
       
       - name: Build project
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ${{ env.TEST_PROJECT }} --configuration Release --no-restore
       
       - name: Run Unit Tests
-        run: dotnet test HotelBooking.Tests/HotelBooking.Tests.csproj --filter "Category=Unit" --configuration Release --no-build --logger "trx;LogFileName=unit-tests.trx" --collect:"XPlat Code Coverage"
+        run: dotnet test ${{ env.TEST_PROJECT }} --filter "FullyQualifiedName~HotelBooking.Tests.Unit|FullyQualifiedName~HotelBooking.Tests.UnitTest1" --configuration Release --no-build --logger "trx;LogFileName=unit-tests.trx" --collect:"XPlat Code Coverage"
         env:
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
       
       - name: Run Integration Tests
-        run: dotnet test HotelBooking.Tests/HotelBooking.Tests.csproj --filter "Category=Integration" --configuration Release --no-build --logger "trx;LogFileName=integration-tests.trx"
+        run: dotnet test ${{ env.TEST_PROJECT }} --filter "FullyQualifiedName~HotelBooking.Tests.Integration" --configuration Release --no-build --logger "trx;LogFileName=integration-tests.trx"
         env:
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
       
@@ -113,7 +90,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       
       - name: Restore NuGet packages
-        run: dotnet restore
+        run: dotnet restore ${{ env.TEST_PROJECT }}
       
       - name: Build project
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ${{ env.TEST_PROJECT }} --configuration Release --no-restore
