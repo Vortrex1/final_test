@@ -385,6 +385,17 @@
           "lib/netstandard2.0/AutoFixture.Xunit2.dll": {}
         }
       },
+      "Bogus/35.6.5": {
+        "runtime": {
+          "lib/net6.0/Bogus.dll": {
+            "assemblyVersion": "35.6.5.0",
+            "fileVersion": "35.6.5.0"
+          }
+        },
+        "compile": {
+          "lib/net6.0/Bogus.dll": {}
+        }
+      },
       "BouncyCastle.Cryptography/2.6.2": {
         "runtime": {
           "lib/net6.0/BouncyCastle.Cryptography.dll": {
@@ -1368,6 +1379,8 @@
       },
       "HotelBooking/1.0.0": {
         "dependencies": {
+          "AutoFixture": "4.18.1",
+          "Bogus": "35.6.5",
           "Microsoft.AspNetCore.OpenApi": "8.0.26",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.10",
           "Swashbuckle.AspNetCore": "6.6.2"
@@ -4073,6 +4086,13 @@
       "sha512": "sha512-I5Cwv1bvWb0lf2x2zO42bBQ2WaGudBh7tVBCzKIf8KmRJG+hmYY7ku3znnFZDVxbQaihNaqNkztLTwK4PwaoWg==",
       "path": "autofixture.xunit2/4.18.1",
       "hashPath": "autofixture.xunit2.4.18.1.nupkg.sha512"
+    },
+    "Bogus/35.6.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2FGZn+aAVHjmCgClgmGkTDBVZk0zkLvAKGaxEf5JL6b3i9JbHTE4wnuY4vHCuzlCmJdU6VZjgDfHwmYkQF8VAA==",
+      "path": "bogus/35.6.5",
+      "hashPath": "bogus.35.6.5.nupkg.sha512"
     },
     "BouncyCastle.Cryptography/2.6.2": {
       "type": "package",

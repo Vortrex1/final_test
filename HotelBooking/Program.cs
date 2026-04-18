@@ -26,12 +26,19 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Seed database with large realistic dataset for k6.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
-    SeedData.Seed(db);
+    if (db.Database.IsRelational())
+    {
+        // Only relational providers support migrations and the large seed used for k6.
+        db.Database.Migrate();
+        SeedData.Seed(db);
+    }
+    else
+    {
+        db.Database.EnsureCreated();
+    }
 }
 
 // Configure the HTTP request pipeline.
