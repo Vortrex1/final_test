@@ -1,12 +1,15 @@
 name: K6 Performance Tests
 
 on:
-  push:
-    branches:
-      - dev
   pull_request:
     branches:
       - main
+      - master
+    paths:
+      - 'HotelBooking/**'
+      - 'HotelBooking.Tests/**'
+      - '.github/workflows/k6.yml'
+  workflow_dispatch:
 
 env:
   DOTNET_VERSION: '8.0.x'
@@ -16,6 +19,20 @@ env:
   POSTGRES_DB: HotelBookingDb
   POSTGRES_PORT: 5432
   API_PORT: 5000
+  LOAD_ROOM_VUS: 5
+  LOAD_AVAILABLE_VUS: 3
+  LOAD_DURATION: 20s
+  STRESS_START_VUS: 1
+  STRESS_STAGE_1_DURATION: 10s
+  STRESS_STAGE_1_TARGET: 5
+  STRESS_STAGE_2_DURATION: 15s
+  STRESS_STAGE_2_TARGET: 10
+  STRESS_STAGE_3_DURATION: 15s
+  STRESS_STAGE_3_TARGET: 15
+  STRESS_STAGE_4_DURATION: 10s
+  STRESS_STAGE_4_TARGET: 15
+  STRESS_STAGE_5_DURATION: 10s
+  STRESS_STAGE_5_TARGET: 2
 
 jobs:
   performance-tests:
@@ -47,50 +64,52 @@ jobs:
       
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
-        with:
-          k6-version: latest
       
       - name: Restore NuGet packages
         run: dotnet restore ${{ env.API_PROJECT }}
       
       - name: Build API
         run: dotnet build ${{ env.API_PROJECT }} --configuration Release --no-restore
-      
-      - name: Publish API
-        run: dotnet publish ${{ env.API_PROJECT }} --configuration Release --output ./api-build --no-build
-      
-      - name: Start API with seeded database
+
+      - name: Start API
+        shell: bash
+        working-directory: .
         run: |
-          cd ./api-build
-          nohup dotnet HotelBooking.dll > ../api.log 2>&1 &
-          echo $! > ../api.pid
+          mkdir -p k6-results
+          dotnet run --project HotelBooking/HotelBooking.csproj --configuration Release --no-build > k6-results/api.log 2>&1 &
+          echo $! > k6-results/api.pid
           sleep 10
         env:
-          ASPNETCORE_ENVIRONMENT: Production
+          ASPNETCORE_ENVIRONMENT: Development
           ASPNETCORE_URLS: http://localhost:${{ env.API_PORT }}
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
       
       - name: Wait for API to be ready
+        shell: bash
         run: |
-          for i in {1..30}; do
+          for i in {1..90}; do
             if curl -s http://localhost:${{ env.API_PORT }}/api/rooms > /dev/null; then
               echo "API is ready!"
               exit 0
             fi
-            echo "Waiting for API... (attempt $i/30)"
+            echo "Waiting for API... (attempt $i/90)"
             sleep 2
           done
           echo "API failed to start"
+          cat k6-results/api.log || true
           exit 1
       
       - name: Run k6 Smoke Tests
-        run: k6 run HotelBooking.Tests/Performance/smoke.js --env BASE_URL=http://localhost:${{ env.API_PORT }}
+        working-directory: .
+        run: k6 run HotelBooking.Tests/Performance/smoke.js -e BASE_URL=http://localhost:${{ env.API_PORT }} --summary-export=k6-results/smoke-results.json
       
       - name: Run k6 Load Tests
-        run: k6 run HotelBooking.Tests/Performance/load.js --env BASE_URL=http://localhost:${{ env.API_PORT }}
+        working-directory: .
+        run: k6 run HotelBooking.Tests/Performance/load.js -e BASE_URL=http://localhost:${{ env.API_PORT }} -e LOAD_ROOM_VUS=${{ env.LOAD_ROOM_VUS }} -e LOAD_AVAILABLE_VUS=${{ env.LOAD_AVAILABLE_VUS }} -e LOAD_DURATION=${{ env.LOAD_DURATION }} --summary-export=k6-results/load-results.json
       
       - name: Run k6 Stress Tests
-        run: k6 run HotelBooking.Tests/Performance/stress.js --env BASE_URL=http://localhost:${{ env.API_PORT }}
+        working-directory: .
+        run: k6 run HotelBooking.Tests/Performance/stress.js -e BASE_URL=http://localhost:${{ env.API_PORT }} -e STRESS_START_VUS=${{ env.STRESS_START_VUS }} -e STRESS_STAGE_1_DURATION=${{ env.STRESS_STAGE_1_DURATION }} -e STRESS_STAGE_1_TARGET=${{ env.STRESS_STAGE_1_TARGET }} -e STRESS_STAGE_2_DURATION=${{ env.STRESS_STAGE_2_DURATION }} -e STRESS_STAGE_2_TARGET=${{ env.STRESS_STAGE_2_TARGET }} -e STRESS_STAGE_3_DURATION=${{ env.STRESS_STAGE_3_DURATION }} -e STRESS_STAGE_3_TARGET=${{ env.STRESS_STAGE_3_TARGET }} -e STRESS_STAGE_4_DURATION=${{ env.STRESS_STAGE_4_DURATION }} -e STRESS_STAGE_4_TARGET=${{ env.STRESS_STAGE_4_TARGET }} -e STRESS_STAGE_5_DURATION=${{ env.STRESS_STAGE_5_DURATION }} -e STRESS_STAGE_5_TARGET=${{ env.STRESS_STAGE_5_TARGET }} --summary-export=k6-results/stress-results.json
       
       - name: Upload k6 results
         uses: actions/upload-artifact@v4
@@ -100,10 +119,12 @@ jobs:
           path: |
             k6-results/
           retention-days: 30
+          if-no-files-found: ignore
 
       - name: Stop API
         if: always()
+        shell: bash
         run: |
-          if [ -f api.pid ]; then
-            kill "$(cat api.pid)" || true
+          if [ -f k6-results/api.pid ]; then
+            kill "$(cat k6-results/api.pid)" || true
           fi

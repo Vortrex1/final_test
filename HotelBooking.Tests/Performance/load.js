@@ -1,18 +1,23 @@
 import http from 'k6/http'
 import { check, group, sleep } from 'k6'
 
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:5000'
+const ROOM_LIST_VUS = Number(__ENV.LOAD_ROOM_VUS || 15)
+const AVAILABLE_ROOM_VUS = Number(__ENV.LOAD_AVAILABLE_VUS || 8)
+const LOAD_DURATION = __ENV.LOAD_DURATION || '45s'
+
 export const options = {
   scenarios: {
     room_list: {
       executor: 'constant-vus',
-      vus: 15,
-      duration: '45s',
+      vus: ROOM_LIST_VUS,
+      duration: LOAD_DURATION,
       exec: 'getRooms',
     },
     available_room_check: {
       executor: 'constant-vus',
-      vus: 8,
-      duration: '45s',
+      vus: AVAILABLE_ROOM_VUS,
+      duration: LOAD_DURATION,
       exec: 'getAvailableRooms',
     },
   },
@@ -22,8 +27,6 @@ export const options = {
     'http_req_duration{scenario:available_room_check}': ['p(95)<800'],
   },
 }
-
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:5000'
 
 export function getRooms() {
   group('Get all rooms', () => {
