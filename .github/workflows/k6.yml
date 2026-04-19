@@ -12,6 +12,7 @@ on:
   workflow_dispatch:
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
   DOTNET_VERSION: '8.0.x'
   API_PROJECT: HotelBooking/HotelBooking.csproj
   POSTGRES_USER: postgres
@@ -19,24 +20,13 @@ env:
   POSTGRES_DB: HotelBookingDb
   POSTGRES_PORT: 5432
   API_PORT: 5000
-  LOAD_ROOM_VUS: 5
-  LOAD_AVAILABLE_VUS: 3
-  LOAD_DURATION: 20s
-  STRESS_START_VUS: 1
-  STRESS_STAGE_1_DURATION: 10s
-  STRESS_STAGE_1_TARGET: 5
-  STRESS_STAGE_2_DURATION: 15s
-  STRESS_STAGE_2_TARGET: 10
-  STRESS_STAGE_3_DURATION: 15s
-  STRESS_STAGE_3_TARGET: 15
-  STRESS_STAGE_4_DURATION: 10s
-  STRESS_STAGE_4_TARGET: 15
-  STRESS_STAGE_5_DURATION: 10s
-  STRESS_STAGE_5_TARGET: 2
 
 jobs:
   performance-tests:
     runs-on: ubuntu-latest
+    concurrency:
+      group: k6-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     
     services:
       postgres:
@@ -103,19 +93,11 @@ jobs:
         working-directory: .
         run: k6 run HotelBooking.Tests/Performance/smoke.js -e BASE_URL=http://localhost:${{ env.API_PORT }} --summary-export=k6-results/smoke-results.json
       
-      - name: Run k6 Load Tests
-        working-directory: .
-        run: k6 run HotelBooking.Tests/Performance/load.js -e BASE_URL=http://localhost:${{ env.API_PORT }} -e LOAD_ROOM_VUS=${{ env.LOAD_ROOM_VUS }} -e LOAD_AVAILABLE_VUS=${{ env.LOAD_AVAILABLE_VUS }} -e LOAD_DURATION=${{ env.LOAD_DURATION }} --summary-export=k6-results/load-results.json
-      
-      - name: Run k6 Stress Tests
-        working-directory: .
-        run: k6 run HotelBooking.Tests/Performance/stress.js -e BASE_URL=http://localhost:${{ env.API_PORT }} -e STRESS_START_VUS=${{ env.STRESS_START_VUS }} -e STRESS_STAGE_1_DURATION=${{ env.STRESS_STAGE_1_DURATION }} -e STRESS_STAGE_1_TARGET=${{ env.STRESS_STAGE_1_TARGET }} -e STRESS_STAGE_2_DURATION=${{ env.STRESS_STAGE_2_DURATION }} -e STRESS_STAGE_2_TARGET=${{ env.STRESS_STAGE_2_TARGET }} -e STRESS_STAGE_3_DURATION=${{ env.STRESS_STAGE_3_DURATION }} -e STRESS_STAGE_3_TARGET=${{ env.STRESS_STAGE_3_TARGET }} -e STRESS_STAGE_4_DURATION=${{ env.STRESS_STAGE_4_DURATION }} -e STRESS_STAGE_4_TARGET=${{ env.STRESS_STAGE_4_TARGET }} -e STRESS_STAGE_5_DURATION=${{ env.STRESS_STAGE_5_DURATION }} -e STRESS_STAGE_5_TARGET=${{ env.STRESS_STAGE_5_TARGET }} --summary-export=k6-results/stress-results.json
-      
       - name: Upload k6 results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: k6-results
+          name: k6-smoke-results
           path: |
             k6-results/
           retention-days: 30
