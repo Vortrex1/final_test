@@ -20,6 +20,10 @@ env:
   POSTGRES_DB: HotelBookingDb
   POSTGRES_PORT: 5432
   API_PORT: 5000
+  SEED_ROOM_COUNT: 20
+  SEED_GUEST_COUNT: 100
+  SEED_RESERVATION_COUNT: 200
+  SEED_BATCH_SIZE: 100
 
 jobs:
   performance-tests:
@@ -73,14 +77,23 @@ jobs:
           ASPNETCORE_ENVIRONMENT: Development
           ASPNETCORE_URLS: http://localhost:${{ env.API_PORT }}
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=${{ env.POSTGRES_PORT }};Database=${{ env.POSTGRES_DB }};Username=${{ env.POSTGRES_USER }};Password=${{ env.POSTGRES_PASSWORD }}"
+          SEED_ROOM_COUNT: ${{ env.SEED_ROOM_COUNT }}
+          SEED_GUEST_COUNT: ${{ env.SEED_GUEST_COUNT }}
+          SEED_RESERVATION_COUNT: ${{ env.SEED_RESERVATION_COUNT }}
+          SEED_BATCH_SIZE: ${{ env.SEED_BATCH_SIZE }}
       
       - name: Wait for API to be ready
         shell: bash
         run: |
           for i in {1..90}; do
-            if curl -s http://localhost:${{ env.API_PORT }}/api/rooms > /dev/null; then
+            if curl -sf http://localhost:${{ env.API_PORT }}/api/rooms > /dev/null; then
               echo "API is ready!"
               exit 0
+            fi
+            if [ -f k6-results/api.pid ] && ! kill -0 "$(cat k6-results/api.pid)" 2>/dev/null; then
+              echo "API process exited before readiness check passed"
+              cat k6-results/api.log || true
+              exit 1
             fi
             echo "Waiting for API... (attempt $i/90)"
             sleep 2
