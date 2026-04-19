@@ -8,10 +8,10 @@ public static class SeedData
 {
     public static void Seed(ApplicationDbContext db)
     {
-        const int roomCount = 250;
-        const int guestCount = 10000;
-        const int reservationCount = 10000;
-        const int batchSize = 1000;
+        var roomCount = GetIntFromEnvironment("SEED_ROOM_COUNT", 250);
+        var guestCount = GetIntFromEnvironment("SEED_GUEST_COUNT", 10000);
+        var reservationCount = GetIntFromEnvironment("SEED_RESERVATION_COUNT", 10000);
+        var batchSize = GetIntFromEnvironment("SEED_BATCH_SIZE", 1000);
 
         var fixture = new Fixture();
         var faker = new Faker("en");
@@ -157,5 +157,13 @@ public static class SeedData
     private static DateTime AsUtc(DateTime value)
     {
         return value.Kind == DateTimeKind.Utc ? value : DateTime.SpecifyKind(value, DateTimeKind.Utc);
+    }
+
+    private static int GetIntFromEnvironment(string variableName, int defaultValue)
+    {
+        var rawValue = Environment.GetEnvironmentVariable(variableName);
+        return int.TryParse(rawValue, out var parsedValue) && parsedValue >= 0
+            ? parsedValue
+            : defaultValue;
     }
 }
